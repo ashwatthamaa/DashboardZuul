@@ -67,4 +67,50 @@ public class DashboardZuulApplication {
             }
         };
     }
+	
+	@Bean
+    public FallbackProvider animalGroupRegistrationFallbackProvider() {
+        return new FallbackProvider() {
+
+            @Override
+            public String getRoute() {
+                return "animal-group-registration";
+            }
+
+            @Override
+            public ClientHttpResponse fallbackResponse(String route, Throwable throwable) {
+                return new ClientHttpResponse() {
+                    @Override
+                    public HttpStatus getStatusCode() throws IOException {
+                        return HttpStatus.OK;
+                    }
+
+                    @Override
+                    public int getRawStatusCode() throws IOException {
+                        return HttpStatus.OK.value();
+                    }
+
+                    @Override
+                    public String getStatusText() throws IOException {
+                        return HttpStatus.OK.toString();
+                    }
+
+                    @Override
+                    public void close() {}
+
+                    @Override
+                    public InputStream getBody() throws IOException {
+                        return new ByteArrayInputStream("{\"Error\":\"animal-group-registration Service is down!\"}".getBytes());
+                    }
+
+                    @Override
+                    public HttpHeaders getHeaders() {
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.setContentType(MediaType.APPLICATION_JSON);
+                        return headers;
+                    }
+                };
+            }
+        };
+    }
 }
